@@ -1,0 +1,165 @@
+package com.example.pagerproject
+
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.firebase.messaging.FirebaseMessaging
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var viewPager: ViewPager2
+    private lateinit var tabLayout: TabLayout
+    private lateinit var toolbar: Toolbar
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navigationView: NavigationView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        // Initialize the toolbar
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        // Initialize ViewPager2 and TabLayout
+        viewPager = findViewById(R.id.viewPager)
+        tabLayout = findViewById(R.id.tabLayout)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navigationView = findViewById(R.id.nav_view)
+
+        // Set up ViewPager2 with adapter
+        viewPager.adapter = ViewPagerAdapter(this)
+
+        // Link TabLayout with ViewPager2 using TabLayoutMediator
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Messages"
+                1 -> "Compose"
+                else -> null
+            }
+        }.attach()
+
+        // Set up the hamburger icon for navigation drawer
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.burger_menu) // Replace with your menu icon
+
+        // Handle navigation item clicks
+        navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_profile -> {
+                    // Open ProfileActivity
+                    val intent = Intent(this, Profile::class.java)
+                    startActivity(intent)
+                    overridePendingTransition(R.anim.animate_fade_enter, R.anim.animate_fade_exit)
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // Handle FCM token and save it to the server if it's the first time
+        val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val isTokenSaved = sharedPreferences.getBoolean("is_token_saved", false)
+
+        if (!isTokenSaved) {
+            // Get FCM token
+            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val token = task.result
+                    Log.d(TAG, token ?: "Token retrieval failed")
+
+                    // Save token to the backend
+                    saveTokenToServer(token ?: "")
+                } else {
+                    Log.w(TAG, "Fetching FCM token failed", task.exception)
+                }
+            }
+        }
+    }
+
+    private fun saveTokenToServer(token: String) {
+        val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        val apiService = RetrofitClient.instance
+
+        // Example device information to send
+        val deviceInfo = DeviceInfo(
+            userName = "",
+            profilePic = null,
+            deviceToken = token,
+            department = ""
+        )
+
+        // Send the device information to the server
+        apiService.registerDevice(
+            userName = deviceInfo.userName,
+            profilePic = deviceInfo.profilePic,
+            deviceToken = deviceInfo.deviceToken,
+            department = deviceInfo.department
+        ).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    editor.putBoolean("is_token_saved", true)
+                    editor.apply()
+                    Log.d(TAG, "Token successfully saved to the server.")
+                } else {
+                    Log.e(TAG, "Failed to save token to the server. Response code: ${response.code()}. Response message: ${response.message()}")
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                Log.e(TAG, "Error: ${t.message}")
+            }
+        })
+    }
+
+    // Adapter for the ViewPager2
+    private inner class ViewPagerAdapter(activity: AppCompatActivity) : FragmentStateAdapter(activity) {
+        override fun getItemCount(): Int = 2
+
+        override fun createFragment(position: Int): Fragment {
+            return when (position) {
+                0 -> FragmentOne()   // Fragment for "Messages" tab
+                1 -> FragmentTwo()   // Fragment for "Compose" tab
+                else -> FragmentOne()
+            }
+        }
+    }
+
+    // Handle options menu items (e.g. opening the drawer)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                // Open the navigation drawer
+                drawerLayout.open()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val intent = Intent(this, Profile::class.java)
+        startActivity(intent)
+        overridePendingTransition(R.anim.animate_fade_enter, R.anim.animate_fade_exit)
+    }
+}

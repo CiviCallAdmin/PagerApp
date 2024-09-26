@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/recCard"
+    app:cardBackgroundColor="@color/white"
+    android:layout_marginHorizontal="10dp"
+    android:layout_marginVertical="10dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="20dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/userImage"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:background="@drawable/border_design"
+            app:cardCornerRadius="100dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            tools:ignore="MissingConstraints">
+
+            <ImageView
+                android:id="@+id/profilePic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/user" />
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:includeFontPadding="false"
+            android:text="Kurt Bryant Arpilleda"
+            android:textColor="@color/DarkGray"
+            android:textStyle="bold"
+            android:paddingEnd="100dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toBottomOf="@+id/userImage"
+            app:layout_constraintStart_toEndOf="@+id/userImage"
+            app:layout_constraintTop_toTopOf="@+id/userImage" />
+
+        <TextView
+            android:id="@+id/timeRec"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-1dp"
+            android:text="8h"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="@color/DarkGray"
+            app:layout_constraintStart_toStartOf="@+id/userName"
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
+
+        <View
+            android:id="@+id/view2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/DarkGray"
+            app:layout_constraintTop_toBottomOf="@+id/userImage" />
+
+        <!-- TextInputEditText is now wrapped inside a valid TextInputLayout -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Message"
+            android:id="@+id/messageBox"
+            app:layout_constraintTop_toBottomOf="@+id/view2"
+            app:hintTextColor="@color/DarkGray">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/messageTxt"
+                android:layout_width="match_parent"
+                android:layout_height="170dp"
+                android:background="@null"
+                android:drawablePadding="15dp"
+                android:editable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:fontFamily="@font/lexend_medium"
+                android:gravity="center"
+                android:inputType="textMultiLine"
+                android:lineSpacingExtra="6dp"
+                android:paddingVertical="25dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="30dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Adding the button below view2 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:gravity="end"
+            app:layout_constraintTop_toBottomOf="@+id/messageBox">
+
+            <Button
+                android:id="@+id/send_button"
+                android:layout_width="wrap_content"
+                android:fontFamily="@font/lexend_medium"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="Ok" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

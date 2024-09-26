@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "234852295267",
+    "project_id": "pagerproject-ddec3",
+    "storage_bucket": "pagerproject-ddec3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234852295267:android:c46e3e54b410d1e8ea0e56",
+        "android_client_info": {
+          "package_name": "com.example.pagerproject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoJWR_X7ipyZwxTAuCvr_iA6h_gKaS9CU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
