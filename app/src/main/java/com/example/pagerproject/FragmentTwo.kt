@@ -11,9 +11,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.android.material.textfield.TextInputEditText
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,7 +19,7 @@ import retrofit2.Response
 class FragmentTwo : Fragment() {
 
     private lateinit var autoCompleteTextView: AutoCompleteTextView
-    private lateinit var messageField: TextInputEditText
+    private lateinit var location: AutoCompleteTextView
     private lateinit var userAdapter: UserAdapter
     private var userList: List<UserResponse> = emptyList()
 
@@ -36,7 +34,7 @@ class FragmentTwo : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         autoCompleteTextView = view.findViewById(R.id.idFrom)
-        messageField = view.findViewById(R.id.messageField)
+        location = view.findViewById(R.id.location)
         val sendButton: Button = view.findViewById(R.id.send_button) // Initialize the send button
         val clearButton: Button = view.findViewById(R.id.clear_button)
 
@@ -87,14 +85,14 @@ class FragmentTwo : Fragment() {
 
     private fun sendMessage() {
         val selectedUserText = autoCompleteTextView.text.toString()
-        if (selectedUserText.isEmpty() || messageField.text.isNullOrEmpty()) {
+        if (selectedUserText.isEmpty() || location.text.isNullOrEmpty()) {
             Toast.makeText(requireContext(), "Please select a user and enter a message.", Toast.LENGTH_SHORT).show()
             return
         }
 
         // Extract device_id from the selected user text
         val selectedDeviceId = selectedUserText.split(" - ")[0].toInt()
-        val messageText = messageField.text.toString()
+        val messageText = location.text.toString()
 
         // Show confirmation dialog
         showConfirmationDialog(selectedDeviceId, messageText)
@@ -148,6 +146,6 @@ class FragmentTwo : Fragment() {
 
     private fun clearFields() {
         autoCompleteTextView.text.clear()
-        messageField.text?.clear()
+        location.text?.clear()
     }
 }

@@ -31,11 +31,11 @@ class UserAdapter(context: Context, private var users: List<UserResponse>) :
         val profilePic: ImageView = view.findViewById(R.id.profilePic)
         val nameRec: TextView = view.findViewById(R.id.nameRec)
         val deviceId: TextView = view.findViewById(R.id.deviceId)
-        val department: TextView = view.findViewById(R.id.department)
+        val idNum: TextView = view.findViewById(R.id.idNum)
 
         nameRec.text = user?.user_name
         deviceId.text = user?.device_id.toString()
-        department.text = user?.department
+        idNum.text = user?.idNumber
 
         // Load profile picture using Glide
         Glide.with(context)

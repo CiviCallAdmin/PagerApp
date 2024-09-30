@@ -40,6 +40,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="80dp"
         android:visibility="gone"
+        android:src="@drawable/fab_add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 

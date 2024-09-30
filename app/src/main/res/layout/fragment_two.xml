@@ -27,29 +27,22 @@
                 android:gravity="center" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/titleTextInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                android:id="@+id/locationTextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="190dp"
-                android:layout_marginTop="20dp"
-                android:autofillHints="message"
-                android:elevation="80dp"
-                app:hintTextColor="@color/DarkGray">
+                android:layout_height="150dp"
+                android:hint="Location"
+                android:layout_marginBottom="20dp"
+                app:helperTextTextColor="@color/redpink"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/messageField"
+                <AutoCompleteTextView
+                    android:id="@+id/location"
                     android:layout_width="match_parent"
-                    android:layout_height="170dp"
-                    android:drawablePadding="15dp"
+                    android:layout_height="140dp"
                     android:fontFamily="@font/lexend_medium"
-                    android:hint="Message Here"
-                    android:inputType="textMultiLine"
-                    android:lineSpacingExtra="6dp"
-                    android:paddingVertical="25dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="30dp"
-                    app:hintTextColor="@color/DarkGray" />
-
+                    android:editable="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -57,7 +50,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Filter here"
+                android:hint="Send To."
                 app:helperTextTextColor="@color/redpink"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">

@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                         if (userData != null && userData.success) {
                             // Populate the fields with existing user data
                             navHeaderFName.text = userData.user_name
-                            navHeaderDept.text = userData.department
+                            navHeaderDept.text = userData.idNumber
 
                             // Load profile picture into ImageView
                             userData.profile_pic?.let { profilePicPath ->
@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             userName = "",
             profilePic = null,
             deviceToken = token,
-            department = ""
+            idNumber = ""
         )
 
         // Send the device information to the server
@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
             userName = deviceInfo.userName,
             profilePic = deviceInfo.profilePic,
             deviceToken = deviceInfo.deviceToken,
-            department = deviceInfo.department
+            idNumber = deviceInfo.idNumber
         ).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {

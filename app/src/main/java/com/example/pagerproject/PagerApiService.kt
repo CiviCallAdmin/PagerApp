@@ -25,14 +25,14 @@ interface PagerApiService {
         @Field("user_name") userName: String,
         @Field("profile_pic") profilePic: String?,
         @Field("device_token") deviceToken: String,
-        @Field("department") department: String
+        @Field("idNumber") idNumber: String
     ): Call<Void>
     @Multipart
     @POST("kurt_profile.php")
     fun saveProfile(
         @Part("device_token") deviceToken: RequestBody,
         @Part("user_name") userName: RequestBody,
-        @Part("department") department: RequestBody,
+        @Part("idNumber") idNumber: RequestBody,
         @Part profile_pic: MultipartBody.Part? // Image is optional
     ): Call<ApiResponse>
 
@@ -48,6 +48,10 @@ interface PagerApiService {
     fun sendMessage(
         @Field("device_token") deviceToken: String,
         @Field("receiver_device_id") receiverDeviceId: Int,
-        @Field("message_text") messageText: String
-    ): Call<ApiResponse> // Assuming ApiResponse matches your response structure
+        @Field("location") messageText: String
+    ): Call<ApiResponse>
+    @GET("kurt_fetchMessage.php")
+    fun fetchMessages(@Query("device_token") deviceToken: String): Call<List<MessageResponse>>
+
+
 }

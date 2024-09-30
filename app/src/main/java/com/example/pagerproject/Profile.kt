@@ -62,14 +62,14 @@ class Profile : AppCompatActivity() {
         // Handle the save button click
         binding.savebtn.setOnClickListener {
             val userName = binding.fullName.text.toString()
-            val department = binding.deptCategory.text.toString()
+            val idNum = binding.idNum.text.toString()
 
             // Retrieve the current device token
             getDeviceToken { deviceToken ->
                 // Validate user input
-                if (userName.isNotBlank() && department.isNotBlank() && deviceToken.isNotBlank()) {
+                if (userName.isNotBlank() && idNum.isNotBlank() && deviceToken.isNotBlank()) {
                     // Call the PHP script to save/update user data
-                    saveUserData(deviceToken, userName, department)
+                    saveUserData(deviceToken, userName, idNum)
                 } else {
                     Toast.makeText(
                         this,
@@ -107,7 +107,7 @@ class Profile : AppCompatActivity() {
                                 // Populate the fields with existing user data
                                 binding.fullName.setText(userData.user_name)
                                 binding.userName.setText(userData.user_name)
-                                binding.deptCategory.setText(userData.department)
+                                binding.idNum.setText(userData.idNumber)
 
                                 // Check if profile_pic is not null before constructing the URL
                                 val profileImagePath = userData.profile_pic // Should be something like "profilePic/profile_1727670832224.jpg"
@@ -148,13 +148,13 @@ class Profile : AppCompatActivity() {
             .into(binding.profileImage) // Bind to your ImageView
     }
 
-    private fun saveUserData(deviceToken: String, userName: String, department: String) {
+    private fun saveUserData(deviceToken: String, userName: String, idNum: String) {
         val apiService = RetrofitClient.instance
 
         // Convert strings to RequestBody
         val tokenRequestBody = deviceToken.toRequestBody("text/plain".toMediaTypeOrNull())
         val nameRequestBody = userName.toRequestBody("text/plain".toMediaTypeOrNull())
-        val departmentRequestBody = department.toRequestBody("text/plain".toMediaTypeOrNull())
+        val idNumRequestBody = idNum.toRequestBody("text/plain".toMediaTypeOrNull())
 
         // Create the image file part from either capturedImageUri or selectedImageUri
         val imageUri = capturedImageUri ?: selectedImageUri // Use capturedImageUri if available, otherwise use selectedImageUri
@@ -180,7 +180,7 @@ class Profile : AppCompatActivity() {
         apiService.saveProfile(
             tokenRequestBody,
             nameRequestBody,
-            departmentRequestBody,
+            idNumRequestBody,
             profilePicPart
         ).enqueue(object : Callback<ApiResponse> {
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
