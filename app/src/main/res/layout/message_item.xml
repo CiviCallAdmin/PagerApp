@@ -111,7 +111,7 @@
             app:layout_constraintTop_toBottomOf="@+id/messageBox">
 
             <Button
-                android:id="@+id/send_button"
+                android:id="@+id/ok_button"
                 android:layout_width="wrap_content"
                 android:fontFamily="@font/lexend_medium"
                 android:layout_height="wrap_content"

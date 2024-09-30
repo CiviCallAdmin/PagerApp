@@ -52,6 +52,9 @@ interface PagerApiService {
     ): Call<ApiResponse>
     @GET("kurt_fetchMessage.php")
     fun fetchMessages(@Query("device_token") deviceToken: String): Call<List<MessageResponse>>
+    @GET("kurt_updateMessageStatus.php")
+    fun updateMessageStatus(@Query("message_id") messageId: Int): Call<Void>
+
 
 
 }
