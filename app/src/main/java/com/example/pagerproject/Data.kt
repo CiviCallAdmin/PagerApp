@@ -16,5 +16,14 @@ data class DeviceInfo(
     val deviceToken: String,
     val department: String
 )
-
+data class ApiResponse(
+    val success: Boolean,
+    val message: String
+)
+data class UserDataResponse(
+    val success: Boolean,
+    val user_name: String?,
+    val department: String?,
+    val message: String?
+)
 

@@ -13,12 +13,21 @@
         android:layout_marginBottom="10dp"
         android:src="@drawable/profilenone" />
     <TextView
-        android:id="@+id/nav_header_title"
+        android:id="@+id/nav_header_fName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
+        android:textSize="16sp"
         android:layout_gravity="center"
         android:text="Name"
         android:textColor="@color/medyowhite"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        android:fontFamily="@font/lexend_medium"/>
+    <TextView
+        android:id="@+id/nav_header_dept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="15sp"
+        android:layout_gravity="center"
+        android:text="Department"
+        android:textColor="@color/medyowhite"
+        android:fontFamily="@font/lexend_medium"/>
 </LinearLayout>

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -14,6 +15,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.pagerproject.Profile.Companion
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,11 +28,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toolbar: Toolbar
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
-
+    private lateinit var navHeaderDept: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         // Initialize the toolbar
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -43,7 +44,9 @@ class MainActivity : AppCompatActivity() {
 
         // Set up ViewPager2 with adapter
         viewPager.adapter = ViewPagerAdapter(this)
-
+        val headerView = navigationView.getHeaderView(0)
+        val navHeaderFName = headerView.findViewById<TextView>(R.id.nav_header_fName)
+        navHeaderDept = headerView.findViewById(R.id.nav_header_dept)
         // Link TabLayout with ViewPager2 using TabLayoutMediator
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
@@ -88,6 +91,51 @@ class MainActivity : AppCompatActivity() {
                     Log.w(TAG, "Fetching FCM token failed", task.exception)
                 }
             }
+        }
+        loadUserData(navHeaderFName)
+    }
+    private fun getDeviceToken(callback: (String) -> Unit) {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // Get the current FCM token
+                val token = task.result
+                callback(token)
+            } else {
+                Log.e(Profile.TAG, "Fetching FCM registration token failed", task.exception)
+                callback("") // Return an empty string in case of failure
+            }
+        }
+    }
+    private fun loadUserData(navHeaderFName: TextView) {
+        getDeviceToken { deviceToken ->
+            // Check if deviceToken is empty
+            if (deviceToken.isEmpty()) {
+                Log.e(TAG, "Device token is empty. Unable to load user data.")
+                return@getDeviceToken
+            }
+
+            // Call the API to fetch existing user data
+            val apiService = RetrofitClient.instance
+            apiService.getUserData(deviceToken).enqueue(object : Callback<UserDataResponse> {
+                override fun onResponse(call: Call<UserDataResponse>, response: Response<UserDataResponse>) {
+                    if (response.isSuccessful) {
+                        val userData = response.body()
+                        if (userData != null && userData.success) {
+                            // Populate the fields with existing user data
+                            navHeaderFName.text = userData.user_name
+                            navHeaderDept.text = userData.department
+                        } else {
+                            Log.e(TAG, userData?.message ?: "No user data found.")
+                        }
+                    } else {
+                        Log.e(TAG, "Failed to load user data. Response code: ${response.code()}")
+                    }
+                }
+
+                override fun onFailure(call: Call<UserDataResponse>, t: Throwable) {
+                    Log.e(TAG, "Error: ${t.message}")
+                }
+            })
         }
     }
 
