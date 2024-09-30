@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:orientation="vertical"
+    android:background="@drawable/rounded_white_bg"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose"
+        android:textSize="23dp"
+        android:id="@+id/labelimage"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:fontFamily="@font/lexend_medium"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textColor="@color/DarkGray"
+        android:layout_gravity="center" />
+
+    <!-- Horizontal Layout for Camera and Gallery Options -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
+
+        <!-- Camera Option -->
+        <LinearLayout
+            android:id="@+id/lytCameraPick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:background="@drawable/highlight_linear"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:srcCompat="@drawable/ic_photo_camera_black_48dp"
+                app:tint="@color/DarkGray" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Camera"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/DarkGray" />
+
+        </LinearLayout>
+
+        <!-- Gallery Option -->
+        <LinearLayout
+            android:id="@+id/lytGalleryPick"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:background="@drawable/highlight_linear"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                app:srcCompat="@drawable/ic_photo_black_48dp"
+                app:tint="@color/DarkGray" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Gallery"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/DarkGray" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

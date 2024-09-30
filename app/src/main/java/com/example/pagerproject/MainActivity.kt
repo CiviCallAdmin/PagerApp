@@ -5,21 +5,23 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.pagerproject.Profile.Companion
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,9 +31,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var navigationView: NavigationView
     private lateinit var navHeaderDept: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         // Initialize the toolbar
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -47,6 +51,8 @@ class MainActivity : AppCompatActivity() {
         val headerView = navigationView.getHeaderView(0)
         val navHeaderFName = headerView.findViewById<TextView>(R.id.nav_header_fName)
         navHeaderDept = headerView.findViewById(R.id.nav_header_dept)
+        val profileImageView = headerView.findViewById<CircleImageView>(R.id.profileImage)
+
         // Link TabLayout with ViewPager2 using TabLayoutMediator
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = when (position) {
@@ -92,8 +98,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        loadUserData(navHeaderFName)
+
+        // Load user data
+        loadUserData(navHeaderFName, navHeaderDept, profileImageView)
     }
+
     private fun getDeviceToken(callback: (String) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -101,12 +110,13 @@ class MainActivity : AppCompatActivity() {
                 val token = task.result
                 callback(token)
             } else {
-                Log.e(Profile.TAG, "Fetching FCM registration token failed", task.exception)
+                Log.e(TAG, "Fetching FCM registration token failed", task.exception)
                 callback("") // Return an empty string in case of failure
             }
         }
     }
-    private fun loadUserData(navHeaderFName: TextView) {
+
+    private fun loadUserData(navHeaderFName: TextView, navHeaderDept: TextView, profileImageView: CircleImageView) {
         getDeviceToken { deviceToken ->
             // Check if deviceToken is empty
             if (deviceToken.isEmpty()) {
@@ -124,6 +134,16 @@ class MainActivity : AppCompatActivity() {
                             // Populate the fields with existing user data
                             navHeaderFName.text = userData.user_name
                             navHeaderDept.text = userData.department
+
+                            // Load profile picture into ImageView
+                            userData.profile_pic?.let { profilePicPath ->
+                                val imageUrl = "http://192.168.254.163/V4/Others/Kurt/PagerSql/$profilePicPath"
+                                // Load image using Glide
+                                Glide.with(profileImageView.context)
+                                    .load(imageUrl)
+                                    .placeholder(R.drawable.profilenone) // Optional placeholder
+                                    .into(profileImageView)
+                            }
                         } else {
                             Log.e(TAG, userData?.message ?: "No user data found.")
                         }
@@ -204,6 +224,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "MainActivity"
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         val intent = Intent(this, Profile::class.java)

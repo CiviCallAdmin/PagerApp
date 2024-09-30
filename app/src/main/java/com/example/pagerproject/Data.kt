@@ -18,12 +18,20 @@ data class DeviceInfo(
 )
 data class ApiResponse(
     val success: Boolean,
-    val message: String
-)
-data class UserDataResponse(
-    val success: Boolean,
-    val user_name: String?,
-    val department: String?,
-    val message: String?
+    val message: String,
+    val error: String? = null // Optional error message
 )
 
+data class UserDataResponse(
+    val success: Boolean,
+    val user_name: String,
+    val department: String,
+    val profile_pic: String,
+    val message: String? = null
+)
+data class UserResponse(
+    val user_name: String,
+    val profile_pic: String,
+    val device_id: Int,
+    val department: String
+)

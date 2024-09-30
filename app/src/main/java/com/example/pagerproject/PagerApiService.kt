@@ -1,5 +1,7 @@
 package com.example.pagerproject
 
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -25,15 +27,27 @@ interface PagerApiService {
         @Field("device_token") deviceToken: String,
         @Field("department") department: String
     ): Call<Void>
-    @FormUrlEncoded
+    @Multipart
     @POST("kurt_profile.php")
     fun saveProfile(
-        @Field("device_token") deviceToken: String,
-        @Field("user_name") userName: String,
-        @Field("department") department: String
+        @Part("device_token") deviceToken: RequestBody,
+        @Part("user_name") userName: RequestBody,
+        @Part("department") department: RequestBody,
+        @Part profile_pic: MultipartBody.Part? // Image is optional
     ): Call<ApiResponse>
+
+    @GET("kurt_fetchUser.php") // Adjust the URL as needed
+    fun fetchUsers(): Call<List<UserResponse>> // Assuming UserResponse matches the JSON structure
+
 
     @GET("kurt_profileFetch.php")
     fun getUserData(@Query("device_token") deviceToken: String): Call<UserDataResponse>
 
+    @FormUrlEncoded
+    @POST("kurt_sendMessage.php")
+    fun sendMessage(
+        @Field("device_token") deviceToken: String,
+        @Field("receiver_device_id") receiverDeviceId: Int,
+        @Field("message_text") messageText: String
+    ): Call<ApiResponse> // Assuming ApiResponse matches your response structure
 }

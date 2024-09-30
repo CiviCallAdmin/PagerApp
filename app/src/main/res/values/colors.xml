@@ -6,4 +6,5 @@
     <color name="DarkGray"> #333333</color>
     <color name="medyowhite">#F7F7F7</color>
     <color name="transparent">#00000000</color>
+    <color name="grey">#E3F4F4</color>
 </resources>
