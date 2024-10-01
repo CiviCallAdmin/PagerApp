@@ -58,9 +58,9 @@
                 <AutoCompleteTextView
                     android:id="@+id/idFrom"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/lexend_medium"
-                    android:editable="true" />
+                    android:editable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout

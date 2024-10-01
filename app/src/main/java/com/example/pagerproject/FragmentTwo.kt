@@ -6,11 +6,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,8 +26,8 @@ class FragmentTwo : Fragment() {
 
     private lateinit var autoCompleteTextView: AutoCompleteTextView
     private lateinit var location: AutoCompleteTextView
-    private lateinit var userAdapter: UserAdapter
     private var userList: List<UserResponse> = emptyList()
+    private var selectedUsers: MutableList<UserResponse> = mutableListOf() // Store selected users
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,16 +41,19 @@ class FragmentTwo : Fragment() {
 
         autoCompleteTextView = view.findViewById(R.id.idFrom)
         location = view.findViewById(R.id.location)
-        val sendButton: Button = view.findViewById(R.id.send_button) // Initialize the send button
+        val sendButton: Button = view.findViewById(R.id.send_button)
         val clearButton: Button = view.findViewById(R.id.clear_button)
+
+        val locations = listOf("Manila", "Cebu", "Palawan", "Batangas", "Pampanga")
+        val locationAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, locations)
+        location.setAdapter(locationAdapter)
 
         // Fetch users from the API
         fetchUsers()
 
         // Set listener for AutoCompleteTextView item selection
-        autoCompleteTextView.setOnItemClickListener { parent, _, position, _ ->
-            val selectedUser = userAdapter.getItem(position)
-            autoCompleteTextView.setText("${selectedUser?.device_id} - ${selectedUser?.user_name}", false)
+        autoCompleteTextView.setOnClickListener {
+            showUserSelectionDialog()
         }
 
         // Set listener for clear button
@@ -56,11 +65,6 @@ class FragmentTwo : Fragment() {
         sendButton.setOnClickListener {
             sendMessage()
         }
-
-        // Set a text change listener to filter the list as the user types
-        autoCompleteTextView.addTextChangedListener { text ->
-            userAdapter.filter.filter(text)
-        }
     }
 
     private fun fetchUsers() {
@@ -69,8 +73,6 @@ class FragmentTwo : Fragment() {
                 if (response.isSuccessful) {
                     response.body()?.let { users ->
                         userList = users
-                        userAdapter = UserAdapter(requireContext(), users)
-                        autoCompleteTextView.setAdapter(userAdapter)
                     }
                 } else {
                     Toast.makeText(requireContext(), "Failed to fetch users", Toast.LENGTH_SHORT).show()
@@ -83,58 +85,122 @@ class FragmentTwo : Fragment() {
         })
     }
 
+    private fun showUserSelectionDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.popup_user_selection, null)
+        val alertDialog = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+
+        val linearLayout = dialogView.findViewById<LinearLayout>(R.id.linear)
+        val closeIcon = dialogView.findViewById<ImageView>(R.id.closeIcon)
+        val btnSelect = dialogView.findViewById<Button>(R.id.btnSelectCampus)
+
+        userList.forEach { user ->
+            val checkboxLayout = layoutInflater.inflate(R.layout.dropdown_item, null)
+            val profilePic: ImageView = checkboxLayout.findViewById(R.id.profilePic)
+            val nameRec: TextView = checkboxLayout.findViewById(R.id.nameRec)
+            val idNum: TextView = checkboxLayout.findViewById(R.id.idNum)
+            val checkBox: CheckBox = checkboxLayout.findViewById(R.id.checkBox12)
+            val mainLinear: LinearLayout = checkboxLayout.findViewById(R.id.mainLinear)
+
+            nameRec.text = user.user_name
+            idNum.text = user.idNumber
+
+            // Load profile picture using Glide
+            Glide.with(requireContext())
+                .load("http://192.168.254.163/V4/Others/Kurt/PagerSql/${user.profile_pic}")
+                .placeholder(R.drawable.user)
+                .into(profilePic)
+
+            // Set the initial checkbox state based on selectedUsers
+            checkBox.isChecked = selectedUsers.contains(user)
+
+            // Add checkbox and listener
+            checkBox.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    if (!selectedUsers.contains(user)) { // Avoid duplicates
+                        selectedUsers.add(user)
+                    }
+                } else {
+                    selectedUsers.remove(user)
+                }
+            }
+
+            // Add click listener to the mainLinear layout to toggle the checkbox
+            mainLinear.setOnClickListener {
+                checkBox.isChecked = !checkBox.isChecked // Toggle checkbox state
+                if (checkBox.isChecked) {
+                    if (!selectedUsers.contains(user)) { // Avoid duplicates
+                        selectedUsers.add(user)
+                    }
+                } else {
+                    selectedUsers.remove(user)
+                }
+            }
+
+            linearLayout.addView(checkboxLayout)
+        }
+
+        closeIcon.setOnClickListener { alertDialog.dismiss() }
+        btnSelect.setOnClickListener {
+            updateAutoCompleteTextView()
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
+    }
+
+
+    private fun updateAutoCompleteTextView() {
+        val selectedTexts = selectedUsers.joinToString(", ") { "${it.device_id} - ${it.user_name}" }
+        autoCompleteTextView.setText(selectedTexts, false)
+    }
+
     private fun sendMessage() {
-        val selectedUserText = autoCompleteTextView.text.toString()
-        if (selectedUserText.isEmpty() || location.text.isNullOrEmpty()) {
-            Toast.makeText(requireContext(), "Please select a user and enter a message.", Toast.LENGTH_SHORT).show()
+        if (selectedUsers.isEmpty() || location.text.isNullOrEmpty()) {
+            Toast.makeText(requireContext(), "Please select users and enter a location.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Extract device_id from the selected user text
-        val selectedDeviceId = selectedUserText.split(" - ")[0].toInt()
         val messageText = location.text.toString()
-
-        // Show confirmation dialog
-        showConfirmationDialog(selectedDeviceId, messageText)
+        showConfirmationDialog(messageText)
     }
 
-    private fun showConfirmationDialog(selectedDeviceId: Int, messageText: String) {
+    private fun showConfirmationDialog(messageText: String) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Send Message")
-        builder.setMessage("Are you sure you want to send this message?")
+        builder.setMessage("Are you sure you want to send this message to selected users?")
         builder.setPositiveButton("Yes") { _, _ ->
-            // Get FCM token
-            getDeviceToken { deviceToken ->
-                if (deviceToken.isNotEmpty()) {
-                    // Send the message using the retrieved token
-                    RetrofitClient.instance.sendMessage(deviceToken, selectedDeviceId, messageText).enqueue(object : Callback<ApiResponse> {
-                        override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
-                            if (response.isSuccessful && response.body() != null) {
-                                Toast.makeText(requireContext(), response.body()!!.message, Toast.LENGTH_SHORT).show()
-                                clearFields() // Clear fields after sending
-                            } else {
-                                Toast.makeText(requireContext(), "Failed to send message", Toast.LENGTH_SHORT).show()
+            selectedUsers.forEach { user ->
+                getDeviceToken { deviceToken ->
+                    if (deviceToken.isNotEmpty()) {
+                        RetrofitClient.instance.sendMessage(deviceToken, user.device_id.toInt(), messageText).enqueue(object : Callback<ApiResponse> {
+                            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                                if (response.isSuccessful && response.body() != null) {
+                                    Toast.makeText(requireContext(), response.body()!!.message, Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(requireContext(), "Failed to send message", Toast.LENGTH_SHORT).show()
+                                }
                             }
-                        }
 
-                        override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                            Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                        }
-                    })
-                } else {
-                    Toast.makeText(requireContext(), "Failed to retrieve device token", Toast.LENGTH_SHORT).show()
+                            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                    } else {
+                        Toast.makeText(requireContext(), "Failed to retrieve device token", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
+            clearFields() // Clear fields after sending
         }
         builder.setNegativeButton("No") { dialog, _ -> dialog.dismiss() }
         builder.create().show()
     }
 
-
     private fun getDeviceToken(callback: (String) -> Unit) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                // Get the current FCM token
                 val token = task.result
                 callback(token ?: "") // Pass the token or an empty string
             } else {
@@ -147,5 +213,7 @@ class FragmentTwo : Fragment() {
     private fun clearFields() {
         autoCompleteTextView.text.clear()
         location.text?.clear()
+        selectedUsers.clear() // Clear selected users after sending
     }
 }
+

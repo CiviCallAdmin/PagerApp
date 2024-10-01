@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/linear"
+        android:padding="16dp">
+        <ImageView
+            android:id="@+id/closeIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/highlight_button"
+            android:src="@drawable/ic_close_gray_24dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:fontFamily="@font/lexend_medium"
+            android:gravity="center"
+            android:layout_marginTop="-20dp"
+            android:padding="10sp"
+            android:id="@+id/label"
+            android:text="Select a Receiver"
+            android:textColor="@color/redpink"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnSelectCampus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/redpink"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="Select"/>
+    </LinearLayout>
+</ScrollView>
