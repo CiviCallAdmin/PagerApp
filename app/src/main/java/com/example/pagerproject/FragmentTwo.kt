@@ -44,7 +44,7 @@ class FragmentTwo : Fragment() {
         val sendButton: Button = view.findViewById(R.id.send_button)
         val clearButton: Button = view.findViewById(R.id.clear_button)
 
-        val locations = listOf("Manila", "Cebu", "Palawan", "Batangas", "Pampanga")
+        val locations = resources.getStringArray(R.array.locations_array)
         val locationAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, locations)
         location.setAdapter(locationAdapter)
 

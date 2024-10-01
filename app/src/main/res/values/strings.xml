@@ -3,4 +3,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="profile_image_desc">User Profile Image</string>
+    <string-array name="locations_array">
+        <item>Manila</item>
+        <item>Cebu</item>
+        <item>Palawan</item>
+        <item>Batangas</item>
+        <item>Pampanga</item>
+    </string-array>
 </resources>
