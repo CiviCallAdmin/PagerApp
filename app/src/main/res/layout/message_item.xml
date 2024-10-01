@@ -93,7 +93,7 @@
                 android:focusableInTouchMode="false"
                 android:fontFamily="@font/lexend_medium"
                 android:gravity="center"
-                android:inputType="textMultiLine"
+                android:inputType="textMultiLine|textNoSuggestions"
                 android:lineSpacingExtra="6dp"
                 android:paddingVertical="25dp"
                 android:paddingStart="10dp"
