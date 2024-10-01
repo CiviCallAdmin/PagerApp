@@ -50,11 +50,12 @@ interface PagerApiService {
         @Field("receiver_device_id") receiverDeviceId: Int,
         @Field("location") messageText: String
     ): Call<ApiResponse>
+
     @GET("kurt_fetchMessage.php")
     fun fetchMessages(@Query("device_token") deviceToken: String): Call<List<MessageResponse>>
     @GET("kurt_updateMessageStatus.php")
     fun updateMessageStatus(@Query("message_id") messageId: Int): Call<Void>
 
-
-
+    @GET("kurt_pushNotif.php")
+    fun pushNotif(@Query("device_token") deviceToken: String): Call<NotificationResponse>
 }

@@ -30,9 +30,6 @@
         android:theme="@style/Theme.PagerProject"
         tools:targetApi="31">
         <activity
-            android:name=".Messages.MessageActivity"
-            android:exported="false" />
-        <activity
             android:name=".Profile"
             android:exported="true" />
         <activity

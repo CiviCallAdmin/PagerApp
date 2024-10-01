@@ -41,7 +41,11 @@ data class Message(
     val profile_pic: String,
     var status: Boolean // true for read, false for unread
 )
-
+data class NotificationResponse(
+    val title: String,
+    val body: String,
+    val messages: List<Message> // Assuming the response contains a list of messages
+)
 data class MessageResponse(
     val message_id: Int,
     val sender_device_id: Int,

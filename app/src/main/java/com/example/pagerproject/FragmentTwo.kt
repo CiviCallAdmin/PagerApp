@@ -179,6 +179,7 @@ class FragmentTwo : Fragment() {
                                 if (response.isSuccessful && response.body() != null) {
                                     Toast.makeText(requireContext(), response.body()!!.message, Toast.LENGTH_SHORT).show()
                                 } else {
+                                    Log.e("FragmentTwo", "Response: ${response.errorBody()?.string()}")
                                     Toast.makeText(requireContext(), "Failed to send message", Toast.LENGTH_SHORT).show()
                                 }
                             }

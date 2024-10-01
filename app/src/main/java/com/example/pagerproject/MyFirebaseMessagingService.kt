@@ -3,87 +3,47 @@ package com.example.pagerproject
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
-import android.media.RingtoneManager
-import android.util.Log
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-    private val CHANNEL_ID = "my_channel_id"
-    private val NOTIFICATION_ID = 1
-
-    override fun onCreate() {
-        super.onCreate()
-        // Create the notification channel when the service is created
-        createNotificationChannel()
-    }
-
-    private fun createNotificationChannel() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            Log.d("Notification Channel", "Creating notification channel")
-            val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "My Notifications",
-                NotificationManager.IMPORTANCE_HIGH // Set to high importance for sound
-            ).apply {
-                description = "Channel description"
-                enableLights(true)
-                lightColor = Color.BLUE
-                enableVibration(true)
-                vibrationPattern = longArrayOf(0, 1000, 500, 1000)
-                setSound(alarmSound, null) // Set the alarm sound
-            }
-
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
-        }
-    }
-
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d("FCM Message", "From: ${remoteMessage.from}")
+        // Handle the message received
+        val title = remoteMessage.notification?.title
+        val message = remoteMessage.notification?.body
 
         // Show notification
-        remoteMessage.notification?.let {
-            showNotification(it.title, it.body)
-        }
-
-        // Handle the message payload (data)
-        if (remoteMessage.data.isNotEmpty()) {
-            Log.d("FCM Data", "Data Payload: ${remoteMessage.data}")
-        }
+        showNotification(title, message)
     }
 
     private fun showNotification(title: String?, message: String?) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val channelId = "message_channel"
+        val channelName = "Messages"
+
+        // Create notification channel for Android O and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            notificationManager.createNotificationChannel(channel)
         }
 
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        // Create an intent that will open your main activity when the notification is tapped
+        val intent = Intent(this, MainActivity::class.java) // Change MainActivity to the appropriate activity
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.user) // Ensure you have this icon in your drawable resources
-            .setContentTitle(title ?: "Default Title") // Default title if null
-            .setContentText(message ?: "Default message") // Default message if null
-            .setStyle(NotificationCompat.BigTextStyle().bigText(message)) // For larger messages
-            .setPriority(NotificationCompat.PRIORITY_HIGH) // Ensure high priority
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setSmallIcon(R.drawable.profilenone) // Use your notification icon
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC) // Make it visible on the lock screen
 
-        // Build and display the notification
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+        notificationManager.notify(0, notificationBuilder.build())
     }
-
 }
-

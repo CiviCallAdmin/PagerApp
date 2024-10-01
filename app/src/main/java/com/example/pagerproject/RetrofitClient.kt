@@ -26,4 +26,3 @@ object RetrofitClient {
         retrofit.create(PagerApiService::class.java)
     }
 }
-
